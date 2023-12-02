@@ -34,3 +34,24 @@ pub struct Args {
     #[arg(short, long)]
     pub file: PathBuf,
 }
+
+#[macro_export]
+macro_rules! cap_name_parse {
+    ($capture:ident, $name:expr) => {
+        $capture
+            .name($name)
+            .ok_or(anyhow!("regex capture error"))?
+            .as_str()
+            .parse()
+    };
+}
+
+#[macro_export]
+macro_rules! cap_name_str {
+    ($capture:ident, $name:expr) => {
+        $capture
+            .name($name)
+            .ok_or(anyhow!("regex capture error"))?
+            .as_str()
+    };
+}
