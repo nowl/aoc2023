@@ -4,6 +4,8 @@ use std::{collections::HashSet, fs, path::Path};
 use anyhow::Error;
 use nom::{character::complete::*, multi::many1, sequence::*, IResult};
 
+const EXPANSION_FACTOR: u64 = 1000000;
+
 #[derive(Debug, Eq, PartialEq, Hash, Default, Clone)]
 struct Spot {
     row: i32,
@@ -73,7 +75,7 @@ fn find_gaps(data: &Data) -> (HashSet<i32>, HashSet<i32>) {
     (row_gaps, col_gaps)
 }
 
-fn count_path_lengths(data: &Data, row_gaps: &HashSet<i32>, col_gaps: &HashSet<i32>) -> i32 {
+fn count_path_lengths(data: &Data, row_gaps: &HashSet<i32>, col_gaps: &HashSet<i32>) -> u64 {
     let num_galaxies = data.galaxies.len() as i32;
     let mut count = 0;
     for a in 0..(num_galaxies - 1) {
@@ -88,7 +90,7 @@ fn count_path_lengths(data: &Data, row_gaps: &HashSet<i32>, col_gaps: &HashSet<i
                 col: bcol,
             } = data.galaxies[b as usize];
 
-            let mut base_length = (brow - arow).abs() + (bcol - acol).abs();
+            let mut base_length = ((brow - arow).abs() + (bcol - acol).abs()) as u64;
 
             debug_println!("base dist {} to {} = {base_length}", a + 1, b + 1);
 
@@ -97,7 +99,7 @@ fn count_path_lengths(data: &Data, row_gaps: &HashSet<i32>, col_gaps: &HashSet<i
             let y = arow.max(brow);
             for row in x + 1..=y - 1 {
                 if row_gaps.contains(&row) {
-                    base_length += 1;
+                    base_length += EXPANSION_FACTOR - 1;
                 }
             }
 
@@ -106,7 +108,7 @@ fn count_path_lengths(data: &Data, row_gaps: &HashSet<i32>, col_gaps: &HashSet<i
             let y = acol.max(bcol);
             for col in x + 1..=y - 1 {
                 if col_gaps.contains(&col) {
-                    base_length += 1;
+                    base_length += EXPANSION_FACTOR - 1;
                 }
             }
 
