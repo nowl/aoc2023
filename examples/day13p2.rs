@@ -1,4 +1,5 @@
 use debug_print::debug_println;
+use itertools::Itertools;
 use std::{fs, path::Path};
 
 use anyhow::Error;
@@ -57,16 +58,32 @@ fn make_vertical(grid: &Vec<Vec<char>>) -> Vec<Vec<bool>> {
 
 fn check_equality_from(col: usize, v: &Vec<Vec<bool>>) -> bool {
     let to_check = (v.len() - col - 2).min(col);
+
+    let mut unmatched = None;
+
     for i in 0..=to_check {
         let a = col - i;
         let b = col + i + 1;
 
         if v[a] != v[b] {
-            return false;
+            if unmatched.is_some() {
+                return false;
+            }
+            unmatched = Some((&v[a], &v[b]));
         }
     }
 
-    true
+    if unmatched.is_none() {
+        return false;
+    }
+
+    let differences = unmatched
+        .unwrap()
+        .0
+        .iter()
+        .zip_eq(unmatched.unwrap().1.iter())
+        .fold(0, |acc, (a, b)| if a == b { acc } else { acc + 1 });
+    differences == 1
 }
 
 fn main() -> Result<(), Error> {
