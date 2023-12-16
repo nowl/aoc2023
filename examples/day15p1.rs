@@ -1,11 +1,10 @@
 use debug_print::debug_println;
-use itertools::Itertools;
 use std::{fs, path::Path};
 
 use anyhow::Error;
 use nom::{
     bytes::complete::{is_not, tag},
-    character::{complete::*, streaming::newline},
+    character::complete::*,
     multi::*,
     sequence::*,
     IResult,
