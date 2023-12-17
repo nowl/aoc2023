@@ -92,12 +92,12 @@ fn main() -> Result<(), Error> {
         }
 
         // check exceeded movement
-        if mp > 3 {
+        if mp > 10 {
             continue;
         }
 
         // check end condition
-        if row == nrows - 1 && col == nrows - 1 {
+        if row == nrows - 1 && col == nrows - 1 && mp >= 4 {
             if let Some(c) = min_cost {
                 if cost < c {
                     min_cost = Some(cost);
@@ -126,24 +126,40 @@ fn main() -> Result<(), Error> {
                 maybe_push_state!((cost, 1, row + 1, col, Some(Down)));
             }
             Some(Up) => {
-                maybe_push_state!((cost, 1, row, col - 1, Some(Left)));
-                maybe_push_state!((cost, 1, row, col + 1, Some(Right)));
-                maybe_push_state!((cost, mp + 1, row - 1, col, Some(Up)));
+                if mp >= 4 {
+                    maybe_push_state!((cost, 1, row, col - 1, Some(Left)));
+                    maybe_push_state!((cost, 1, row, col + 1, Some(Right)));
+                    maybe_push_state!((cost, mp + 1, row - 1, col, Some(Up)));
+                } else {
+                    maybe_push_state!((cost, mp + 1, row - 1, col, Some(Up)));
+                }
             }
             Some(Down) => {
-                maybe_push_state!((cost, 1, row, col - 1, Some(Left)));
-                maybe_push_state!((cost, 1, row, col + 1, Some(Right)));
-                maybe_push_state!((cost, mp + 1, row + 1, col, Some(Down)));
+                if mp >= 4 {
+                    maybe_push_state!((cost, 1, row, col - 1, Some(Left)));
+                    maybe_push_state!((cost, 1, row, col + 1, Some(Right)));
+                    maybe_push_state!((cost, mp + 1, row + 1, col, Some(Down)));
+                } else {
+                    maybe_push_state!((cost, mp + 1, row + 1, col, Some(Down)));
+                }
             }
             Some(Left) => {
-                maybe_push_state!((cost, 1, row - 1, col, Some(Up)));
-                maybe_push_state!((cost, 1, row + 1, col, Some(Down)));
-                maybe_push_state!((cost, mp + 1, row, col - 1, Some(Left)));
+                if mp >= 4 {
+                    maybe_push_state!((cost, 1, row - 1, col, Some(Up)));
+                    maybe_push_state!((cost, 1, row + 1, col, Some(Down)));
+                    maybe_push_state!((cost, mp + 1, row, col - 1, Some(Left)));
+                } else {
+                    maybe_push_state!((cost, mp + 1, row, col - 1, Some(Left)));
+                }
             }
             Some(Right) => {
-                maybe_push_state!((cost, 1, row - 1, col, Some(Up)));
-                maybe_push_state!((cost, 1, row + 1, col, Some(Down)));
-                maybe_push_state!((cost, mp + 1, row, col + 1, Some(Right)));
+                if mp >= 4 {
+                    maybe_push_state!((cost, 1, row - 1, col, Some(Up)));
+                    maybe_push_state!((cost, 1, row + 1, col, Some(Down)));
+                    maybe_push_state!((cost, mp + 1, row, col + 1, Some(Right)));
+                } else {
+                    maybe_push_state!((cost, mp + 1, row, col + 1, Some(Right)));
+                }
             }
         }
     }
