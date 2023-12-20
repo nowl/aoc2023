@@ -250,6 +250,3 @@ fn main() -> Result<(), Error> {
 
     Ok(())
 }
-
-// 67170, too high
-// 66824, too low
