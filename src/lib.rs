@@ -55,3 +55,8 @@ macro_rules! cap_name_str {
             .as_str()
     };
 }
+
+pub fn pause_enter() {
+    let mut buf = String::new();
+    let _ = io::stdin().read_line(&mut buf);
+}
