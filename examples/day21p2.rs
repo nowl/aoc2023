@@ -116,7 +116,7 @@ fn display(map: &Vec<Vec<Tile>>, locs: &Vec<Vec<bool>>) {
     }
 }
 
-fn simulate(map: &Vec<Vec<Tile>>, row: usize, col: usize, num: i32) {
+fn simulate(map: &Vec<Vec<Tile>>, row: usize, col: usize, num: i32) -> u64 {
     let mut locs = map
         .iter()
         .map(|row| repeat_n(false, row.len()).collect_vec())
@@ -139,7 +139,9 @@ fn simulate(map: &Vec<Vec<Tile>>, row: usize, col: usize, num: i32) {
         .map(|row| row.iter().filter(|&v| *v == true).count() as i32)
         .sum::<i32>();
 
-    println!("{count}");
+    debug_println!("{count}");
+
+    count as u64
 }
 
 fn main() -> Result<(), Error> {
@@ -157,33 +159,28 @@ fn main() -> Result<(), Error> {
     // simulations
 
     // full map
-    // 7401 (odd),  7388 (even)
-    //simulate(&data.map, data.start.0, data.start.1, 65);
-    //simulate(&data.map, 65, 0, 233);
+    let full_tile_even = simulate(&data.map, data.start.0, data.start.1, 234);
+    let full_tile_odd = simulate(&data.map, data.start.0, data.start.1, 233);
 
     // corner maps
-    // top = 5563
-    //simulate(&data.map, 130, 65, 130);
-    // bottom = 5593
-    //simulate(&data.map, 0, 65, 130);
-    // right = 5569
-    //simulate(&data.map, 65, 0, 130);
-    // left = 5587
-    //simulate(&data.map, 65, 130, 130);
+    let mut corners = 0;
+    corners += simulate(&data.map, 130, 65, 130);
+    corners += simulate(&data.map, 0, 65, 130);
+    corners += simulate(&data.map, 65, 0, 130);
+    corners += simulate(&data.map, 65, 130, 130);
 
     // diagonal
-    // top/left = 949, 6498
-    //simulate(&data.map, 0, 0, 64);
-    //simulate(&data.map, 0, 0, 65 + 130);
-    // top/right = 948, 6472
-    //simulate(&data.map, 130, 0, 64);
-    //simulate(&data.map, 130, 0, 65 + 130);
-    // bottom/left= 938, 6496
-    //simulate(&data.map, 0, 130, 64);
-    //simulate(&data.map, 0, 130, 65 + 130);
-    // bottom/right = 959, 6492
-    //simulate(&data.map, 130, 130, 64);
-    //simulate(&data.map, 130, 130, 65 + 130);
+    let mut small_diags = 0;
+    small_diags += simulate(&data.map, 0, 0, 64);
+    small_diags += simulate(&data.map, 130, 0, 64);
+    small_diags += simulate(&data.map, 0, 130, 64);
+    small_diags += simulate(&data.map, 130, 130, 64);
+
+    let mut big_diags = 0;
+    big_diags += simulate(&data.map, 0, 0, 65 + 130);
+    big_diags += simulate(&data.map, 130, 0, 65 + 130);
+    big_diags += simulate(&data.map, 0, 130, 65 + 130);
+    big_diags += simulate(&data.map, 130, 130, 65 + 130);
 
     // example with 4
     //    DCD
@@ -209,23 +206,19 @@ fn main() -> Result<(), Error> {
         evens += (c / 2) * 2;
     }
     diag_count += 1;
-    println!("filled: {total_filled}");
-    println!("diag: {diag_count}");
-    println!("odds: {odds}");
-    println!("evens: {evens}");
-    println!("odds+evens: {}", odds + evens);
-
-    let corners = 5563 + 5593 + 5569 + 5587;
-    let small_diags = 949 + 948 + 938 + 959;
-    let big_diags = 6498 + 6472 + 6496 + 6492;
+    debug_println!("filled: {total_filled}");
+    debug_println!("diag: {diag_count}");
+    debug_println!("odds: {odds}");
+    debug_println!("evens: {evens}");
+    debug_println!("odds+evens: {}", odds + evens);
 
     let total = corners
         + diag_count * small_diags
         + (diag_count - 1) * big_diags
-        + odds * 7388
-        + evens * 7401;
+        + odds * full_tile_even
+        + evens * full_tile_odd;
 
-    println!("total: {total}");
+    println!("{total}");
 
     Ok(())
 }
